@@ -17,8 +17,8 @@ L, E, I, rho, A = symbols('L, E, I, rho, A')
 q_list = []
 q_list_dot = []
 for i in range(1, 11):
-    q_list.append(f'q{i}')
-    q_list_dot.append(f'q{i}_dot')
+    q_list.append(f'q{i}(t)')
+    q_list_dot.append(f'q{i}_dot(t)')
 
 var_list_str = [*q_list, *q_list_dot]
 
@@ -46,16 +46,27 @@ print(beam_shapes)
 k1, k2, k3, k4 = symbols('k1, k2, k3, k4') # Symbols for positional-identification
 
 f = beam_shapes[0]*k1 + beam_shapes[1]*k2 + beam_shapes[2]*k3 + beam_shapes[3]*k4
-T_func_f_format = f'integrate(1/2*rho*A*diff({f},t)**2, (y, 0, L))'
+T_func_f_format = f'integrate(1/2*rho*A*Derivative({f},t)**2, (y, 0, L))'
+U_func_f_format = f'integrate(1/2*E*I*Derivative(Derivative({f},y),y)**2, (y, 0, L))'
 
-T = [[str(1/2*f), {k1:q_list[0:10], k2:q_list_dot[0:10], k3:q_list[1:11], k4:q_list_dot[1:11]}]]
-U = [[], []]
+q_list_T = q_list.copy()
+q_list_T.insert(0, '0')
+q_list_dot_T = q_list_dot.copy()
+q_list_dot_T.insert(0, '0')
+
+T = [[T_func_f_format, {'k1':q_list_T[0:10], 'k2':q_list_dot_T[0:10], 'k3':q_list_T[1:11], 'k4':q_list_dot_T[1:11]}]]
+U = [[U_func_f_format, {'k1':q_list_T[0:10], 'k2':q_list_dot_T[0:10], 'k3':q_list_T[1:11], 'k4':q_list_dot_T[1:11]}]]
 
 
 ###############################################
 ##########   USER DEFINITION END   ############
 ###############################################
 
-print(var_list_str)
-var_raw = open('var_list_str.pkl', 'wb')
-pickle.dump(var_list_str, var_raw)
+variable_list_str = [var_list_str, parameter_list_str]
+var_raw = open('variable_list_str.pkl', 'wb')
+pickle.dump(variable_list_str, var_raw)
+T_raw = open('T_raw.pkl', 'wb')
+pickle.dump(T, T_raw)
+U_raw = open('U_raw.pkl', 'wb')
+pickle.dump(U, U_raw)
+print(T)
