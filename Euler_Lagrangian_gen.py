@@ -72,12 +72,12 @@ print(var_list_dt_raw)
 ###### Creating symbolic dt variables #######
 var_list_dt = []
 for i in var_list_str:
-    j = i+'_dt'
+    j = i[0:-3]+'_dt'
     globals()[j] = symbols(j)
     var_list_dt.append(globals()[j])
 var_list_dt_dt = []
 for i in var_list_str:
-    j = i+'_dt_dt'
+    j = i[0:-3]+'_dt_dt'
     globals()[j] = symbols(j)
     var_list_dt_dt.append(globals()[j])
 
@@ -142,8 +142,10 @@ U_M = (Matrix(U_list).T).tolist()
 for i in U_M:
     U_final.append(nsimplify(sum(i)))
 
-    
-
+T_raw = open('T_final.pkl', 'wb')
+pickle.dump(T_final, T_raw)
+U_raw = open('U_final.pkl', 'wb')
+pickle.dump(U_final, U_raw)
 
 
 
