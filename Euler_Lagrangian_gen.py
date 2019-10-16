@@ -81,6 +81,12 @@ for i in var_list_str:
     globals()[j] = symbols(j)
     var_list_dt_dt.append(globals()[j])
 
+###### Sympify parameters #######
+
+parameter_list = []
+for i in parameter_list_str:
+    globals()[i] = symbols(i)
+
 ##### Creating maps #########
 var_func_to_sym = {}
 for i in range(len(var_list_func)):
@@ -94,12 +100,6 @@ for i in range(len(var_list_dt_dt_raw)):
     var_list_raw_to_sym_dt[var_list_dt_dt_raw[i]] = var_list_dt_dt[i]
 
 replacement_map = {**var_func_to_sym, **var_list_raw_to_sym_dt, **var_list_raw_to_sym_dt_dt}
-
-###### Sympify parameters #######
-
-parameter_list = []
-for i in parameter_list_str:
-    globals()[i] = symbols(i)
 
 ###### Sympify T and U ##########
 

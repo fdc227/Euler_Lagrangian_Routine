@@ -2,17 +2,18 @@ from sympy import *
 import pickle
 from shape_gen import shape_gen
 
-##### Put variables as a list of strings ######
 
-var_list_str = []
-parameter_list_str = ['L', 'E', 'I', 'rho', 'A']
-L, E, I, rho, A = symbols('L, E, I, rho, A')
 
 ###############################################
 ###########     USER DEFINITION      ##########
 ###############################################
 
-#######     DEFINE VARIABLE STRINGS     #######
+##### Put variables as a list of strings ######
+
+var_list_str = []
+parameter_list_str = ['L', 'E', 'I', 'rho', 'A']
+
+########## DEFINE VARIABLE STRINGS ############
 
 q_list = []
 q_list_dot = []
@@ -22,11 +23,18 @@ for i in range(1, 11):
 
 var_list_str = [*q_list, *q_list_dot]
 
-# q_list_dt = [0]
-# q_list_dot_dt = [0]
-# for i in range(1, 11):
-#     q_list_dt.append(f'q{i}_dt')
-#     q_list_dot_dt.append(f'q{i}_dot_dt')
+############ Initial Conditions  ##############
+
+IC = []
+# Assuming r = 10cm = 0.1m
+parameter_IC = [1, 10**6, 0.75*10**(-4), 2.7*10**3, 3.14*10**(-2)]
+q_IC = []
+for i in range(10):
+    q_IC.append((i+1)*0.2)
+for i in range(10):
+    q_IC.append(0.2)
+
+IC = [q_IC, parameter_IC]
 
 ###############################################
 
@@ -69,4 +77,6 @@ T_raw = open('T_raw.pkl', 'wb')
 pickle.dump(T, T_raw)
 U_raw = open('U_raw.pkl', 'wb')
 pickle.dump(U, U_raw)
+IC_raw = open('IC.pkl', 'wb')
+pickle.dump(IC, IC_raw)
 print(T)

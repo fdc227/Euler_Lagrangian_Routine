@@ -6,6 +6,10 @@ from multiprocessing.pool import Pool
 T_raw = open('T_final.pkl', 'rb')
 T = pickle.load(T_raw)
 
+############################################
+######## STANDARD VARIABLE GEN FORM ########
+############################################
+
 var_raw = open('variable_list_str.pkl', 'rb')
 variable_list_str = pickle.load(var_raw)
 var_list_str, parameter_list_str = variable_list_str[0], variable_list_str[1]
@@ -29,6 +33,10 @@ for i in var_list_str:
     j = i[0:-3] +'_dt_dt'
     globals()[j] = symbols(j)
     var_list_dt_dt.append(globals()[j])
+
+#############################################
+#############################################
+#############################################
 
 def T_eq_to_matrix(i):
     eq = T[i]
