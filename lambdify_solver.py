@@ -5,13 +5,17 @@ from numpy.linalg import inv
 from scipy.integrate import odeint
 
 A_raw = open('A.pkl', 'rb')
-A = pickle.load(A_raw)
+A_list = pickle.load(A_raw)
 b_raw = open('b.pkl', 'rb')
-b = pickle.load(b_raw)
+b_list = pickle.load(b_raw)
+U_raw = open('U_final.pkl', 'rb')
+U_list = pickle.load(U_raw)
 
 IC_raw = open('IC.pkl', 'rb')
 IC = pickle.load(IC_raw)
+
 q_IC, parameter_IC = IC[0], IC[1]
+parameter_IC = numpy.array(parameter_IC, dtype=numpy.float64)
 
 ############################################
 ######## STANDARD VARIABLE GEN FORM ########
@@ -24,6 +28,8 @@ var_list_str, parameter_list_str = variable_list_str[0], variable_list_str[1]
 parameter_list = []
 for i in parameter_list_str:
     globals()[i] = symbols(i)
+    parameter_list.append(globals()[i])
+# print(parameter_list)
 
 var_list = []
 for i in var_list_str:
@@ -45,12 +51,34 @@ for i in var_list_str:
 ##################  END  ####################
 #############################################
 
-A_f = lambdify([*var_list, *var_list_dt], A, 'numpy')
-b_f = lambdify([*var_list, *var_list_dt], b, 'numpy')
+param_subs = {}
+for i in range(len(parameter_list)):
+    param_subs[parameter_list[i]] = parameter_IC[i]
 
-def EL(y, t, ):
-    return (-1) * numpy.dot(inv(A_f), b_f) 
+A_list = (Matrix(A_list).subs(param_subs)).tolist()
+b_list = (Matrix(b_list).subs(param_subs)).tolist()
+U_list = (Matrix(U_list).subs(param_subs)).tolist()
+
+A_f = lambdify([*var_list, *var_list_dt], A_list)
+b_f = lambdify([*var_list, *var_list_dt], b_list)
+U_f = lambdify([*var_list, *var_list_dt], U_list)
+
+q_IC_np = numpy.array(q_IC, dtype=numpy.float64)
+IC_len = len(q_IC)
+
+def equation_ode(y, t):
+    A_m = A_f(*y)
+    b_m = numpy.array(b_f(*y)).flatten()
+    U_m = numpy.array(U_f(*y)).flatten()
+    RHS = -b_m - U_m
+    output_0 = y[IC_len // 2 : IC_len]
+    output_1 = numpy.array(numpy.dot(inv(A_m), RHS), dtype=numpy.float64)
+    output = numpy.concatenate((output_0, output_1), axis=0)
+    print(y)
+    return  output
 
 t = numpy.linspace(0, 10, 101)
-sol = odeint(EL, q_IC, t)
+sol = odeint(equation_ode, q_IC_np, t)
 
+sol_raw = open('sol.pkl', 'wb')
+pickle.dump(sol, sol_raw)

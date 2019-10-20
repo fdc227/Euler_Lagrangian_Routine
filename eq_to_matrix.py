@@ -44,21 +44,24 @@ def T_eq_to_matrix(i):
     arg_list = linear_coeffs(eq, *var_list_dt_dt)
     b = arg_list.pop()
     A = arg_list
-    return [A, b]
+    return A, b
 
 
 p = Pool(len(T))
 R_T = [r for r in range(len(T))]
 T_lp = p.map(T_eq_to_matrix, R_T)
 
-A = []
-b = []
+# print(T_lp)
+
+A_list = []
+b_list = []
 for term in T_lp:
-    A.append(T_lp[0])
-    b.append(T_lp[1])
+    A_list.append(term[0])
+    b_list.append(term[1])
+print(A_list)
 
 
 A_raw = open('A.pkl', 'wb')
 b_raw = open('b.pkl', 'wb')
-pickle.dump(A, A_raw)
-pickle.dump(b, b_raw)
+pickle.dump(A_list, A_raw)
+pickle.dump(b_list, b_raw)
